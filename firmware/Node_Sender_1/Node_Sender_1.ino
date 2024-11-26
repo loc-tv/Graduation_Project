@@ -1,78 +1,107 @@
-/*********
-  Rui Santos & Sara Santos - Random Nerd Tutorials
-  Complete project details at https://RandomNerdTutorials.com/esp-now-many-to-one-esp32/
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*********/
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include <esp_now.h>
 #include <WiFi.h>
 
-// REPLACE WITH THE RECEIVER'S MAC Address
-uint8_t broadcastAddress[] = {0xe8, 0x6b, 0xea, 0xc9, 0xb7, 0x34};
+// Cấu hình chân cảm biến và ngoại vi
+#define RELAY_IN1 27
+#define RELAY_IN2 26
+#define LED_RED 17
+#define LED_GREEN 5
+#define IR_DO_PIN 0
+#define MQ7_AO_PIN 4
+#define MQ7_DO_PIN 16
 
-// Structure example to send data
-// Must match the receiver structure
-typedef struct struct_message {
-    int id; // must be unique for each sender board
-    int x;
-    int y;
-} struct_message;
+// Địa chỉ I2C của BME280
+#define BME280_ADDRESS 0x76
+Adafruit_BME280 bme;
 
-// Create a struct_message called myData
-struct_message myData;
+// Cấu trúc dữ liệu gửi qua ESP-NOW
+typedef struct {
+  uint8_t node_id;         // ID của Node (1 hoặc 2)
+  float temperature;       // Nhiệt độ
+  float humidity;          // Độ ẩm
+  bool flame_detected;     // Trạng thái phát hiện lửa
+  bool co_detected;        // Trạng thái phát hiện khí CO
+} SensorData;
 
-// Create peer interface
-esp_now_peer_info_t peerInfo;
+SensorData data;
 
-// callback when data is sent
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-}
- 
+// Địa chỉ MAC của Gateway
+uint8_t gatewayMAC[] = {0xE8, 0x6B, 0xEA, 0xC9, 0xB7, 0x34};
+
+// Đặt ID cho node
+#define NODE_ID 1  // Thay thành 2 cho Node 2
+
 void setup() {
-  // Init Serial Monitor
   Serial.begin(115200);
 
-  // Set device as a Wi-Fi Station
-  WiFi.mode(WIFI_STA);
+  // Cấu hình ngoại vi
+  pinMode(RELAY_IN1, OUTPUT);
+  pinMode(RELAY_IN2, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(IR_DO_PIN, INPUT);
+  pinMode(MQ7_DO_PIN, INPUT);
 
-  // Init ESP-NOW
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    return;
+  // Mặc định trạng thái ban đầu
+  digitalWrite(RELAY_IN1, LOW);
+  digitalWrite(RELAY_IN2, LOW);
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, HIGH);  // Đèn xanh bật khi an toàn
+
+  // Kết nối BME280
+  if (!bme.begin(BME280_ADDRESS)) {
+    Serial.println("Không tìm thấy cảm biến BME280!");
+    while (1);
   }
 
-  // Once ESPNow is successfully Init, we will register for Send CB to
-  // get the status of Trasnmitted packet
-  esp_now_register_send_cb(OnDataSent);
-  
-  // Register peer
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;  
+  // Cấu hình ESP-NOW
+  WiFi.mode(WIFI_STA);
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("ESP-NOW Init Failed");
+    return;
+  }
+  esp_now_peer_info_t peerInfo;
+  memcpy(peerInfo.peer_addr, gatewayMAC, 6);
+  peerInfo.channel = 0;
   peerInfo.encrypt = false;
-  
-  // Add peer        
-  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
   }
-}
- 
-void loop() {
-  // Set values to send
-  myData.id = 1;
-  myData.x = random(0,50);
-  myData.y = random(0,50);
 
-  // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-   
-  if (result == ESP_OK) {
-    Serial.println("Sent with success");
+  // Gán ID cho node
+  data.node_id = NODE_ID;
+}
+
+void loop() {
+  // Đọc dữ liệu cảm biến
+  data.temperature = bme.readTemperature();
+  data.humidity = bme.readHumidity();
+  data.flame_detected = digitalRead(IR_DO_PIN) == LOW;
+  data.co_detected = digitalRead(MQ7_DO_PIN) == LOW;
+
+  // Điều khiển ngoại vi dựa trên dữ liệu cảm biến
+  if (data.flame_detected && data.co_detected) {
+    // Kích hoạt đèn đỏ và relay
+    digitalWrite(LED_RED, HIGH);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(RELAY_IN1, HIGH);
+    digitalWrite(RELAY_IN2, HIGH);
+  } else {
+    // Trạng thái an toàn
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(RELAY_IN1, LOW);
+    digitalWrite(RELAY_IN2, LOW);
   }
-  else {
-    Serial.println("Error sending the data");
-  }
-  delay(10000);
+
+  // Gửi dữ liệu qua ESP-NOW
+  esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
+
+  // Chờ 2 giây trước khi lặp lại
+  delay(2000);
 }
