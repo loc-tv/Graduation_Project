@@ -103,5 +103,5 @@ void loop() {
   esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
 
   // Chờ 2 giây trước khi lặp lại
-  delay(2000);
+  delay(10000);
 }
