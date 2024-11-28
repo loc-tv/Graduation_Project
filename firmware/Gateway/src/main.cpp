@@ -65,7 +65,7 @@ void initWiFi() {
   Serial.println();
 }
 
-void onDataRecv(const esp_now_recv_info_t *recvInfo, const uint8_t *incomingData, int len) {
+void onDataRecv(const uint8_t *recvInfo, const uint8_t *incomingData, int len) {
   memcpy(&data, incomingData, sizeof(data));
 
   // Hiển thị dữ liệu trên Serial Monitor
@@ -93,12 +93,12 @@ void onDataRecv(const esp_now_recv_info_t *recvInfo, const uint8_t *incomingData
 // Write float values to the database
 void sendFloat(String path, float value){
   if (Firebase.RTDB.setFloat(&fbdo, path.c_str(), value)){
-    Serial.print("Writing value: ");
-    Serial.print (value);
-    Serial.print(" on the following path: ");
-    Serial.println(path);
+    // Serial.print("Writing value: ");
+    // Serial.print (value);
+    // Serial.print(" on the following path: ");
+    // Serial.println(path);
     Serial.println("PASSED");
-    Serial.print("PATH: ");Serial.println(fbdo.dataPath());
+    // Serial.print("PATH: ");Serial.println(fbdo.dataPath());
     Serial.print("TYPE: ");Serial.println(fbdo.dataType());
   }
   else {
@@ -155,12 +155,13 @@ void setup(){
   }
   // Print user UID
   uid = auth.token.uid.c_str();
-  Serial.print("User UID: ");
-  Serial.println(uid);
+  // Serial.print("User UID: ");
+  // Serial.println(uid);
 
   // Update database path
-  databasePath = "/UsersData/";
-  databasePath += uid;
+  databasePath = "/Node_/";
+  databasePath += int(data.node_id);
+  // databasePath += String(data.node_id);
 
   // Update database path for sensor readings
   tempPath = databasePath;
