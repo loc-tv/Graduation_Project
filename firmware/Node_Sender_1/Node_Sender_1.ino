@@ -59,15 +59,16 @@ void setup() {
 
   // Cấu hình ESP-NOW
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed");
     return;
   }
-  esp_now_peer_info_t peerInfo;
+  esp_now_peer_info_t peerInfo = {};
   memcpy(peerInfo.peer_addr, gatewayMAC, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
-
+  // peerInfo.ifidx = ESP_IF_WIFI_STA;  // Chỉ định giao diện
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;

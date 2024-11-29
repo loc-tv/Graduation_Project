@@ -23,12 +23,13 @@
 // Insert RTDB URLefine the RTDB URL
 #define DATABASE_URL "https://fire-warning-ca3ca-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
+bool dataReady = false;
+
+
 // Define Firebase objects
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
-
-String uid;
 
 
 String databasePath;
@@ -54,7 +55,8 @@ unsigned long timerDelay = 10000;
 
 
 // Initialize WiFi
-void initWiFi() {
+void initWiFi() 
+{
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi ..");
   while (WiFi.status() != WL_CONNECTED) {
@@ -63,6 +65,54 @@ void initWiFi() {
   }
   Serial.println(WiFi.localIP());
   Serial.println();
+}
+
+void initESPNow() 
+{
+  WiFi.mode(WIFI_STA);
+    // Initialize ESP-NOW
+  if (esp_now_init() == ESP_OK) 
+    Serial.println("ESP-NOW initialized"); 
+  else {
+    Serial.println("ESP-NOW initialization failed");
+    return;
+  }
+  // esp_now_register_recv_cb(esp_now_recv_cb_t(onDataRecv));
+}
+
+void initFirebase() 
+{
+  config.api_key = API_KEY;
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+  config.database_url = DATABASE_URL;
+
+  Firebase.reconnectWiFi(true);
+  fbdo.setResponseSize(4096);
+
+  // Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+
+  // Assign the maximum retry of token generation
+  config.max_token_generation_retry = 5;
+  Firebase.begin(&config, &auth);
+  Serial.println("Getting User UID");
+
+  while ((auth.token.uid) == "") {
+    Serial.print('.');
+    delay(1000);
+  }
+}
+
+void sendFloat(String path, float value){
+  if (Firebase.RTDB.setFloat(&fbdo, path.c_str(), value)){
+    Serial.println("PASSED");
+    Serial.print("TYPE: ");Serial.println(fbdo.dataType());
+  }
+  else {
+    Serial.println("FAILED");
+    Serial.print("REASON: ");Serial.println (fbdo.errorReason());
+  }
 }
 
 void onDataRecv(const uint8_t *recvInfo, const uint8_t *incomingData, int len) {
@@ -88,79 +138,10 @@ void onDataRecv(const uint8_t *recvInfo, const uint8_t *incomingData, int len) {
   Serial.println(data.co_detected ? "Nguy hiem" : "An toan");
 
   Serial.println("===============================================");
-}
+  dataReady = true;
 
-// Write float values to the database
-void sendFloat(String path, float value){
-  if (Firebase.RTDB.setFloat(&fbdo, path.c_str(), value)){
-    // Serial.print("Writing value: ");
-    // Serial.print (value);
-    // Serial.print(" on the following path: ");
-    // Serial.println(path);
-    Serial.println("PASSED");
-    // Serial.print("PATH: ");Serial.println(fbdo.dataPath());
-    Serial.print("TYPE: ");Serial.println(fbdo.dataType());
-  }
-  else {
-    Serial.println("FAILED");
-    Serial.print("REASON: ");Serial.println (fbdo.errorReason());
-  }
-}
-
-void setup(){
-  Serial.begin(115200);
-  // Initialize BME280 sensor
-  initWiFi();
-  WiFi.mode(WIFI_STA);
-
-    // Initialize ESP-NOW
-  if (esp_now_init() == ESP_OK) 
-  {
-    Serial.println("ESP-NOW initialized");
-  } 
-  else 
-  {
-    Serial.println("ESP-NOW initialization failed");
-    return;
-  }
-  esp_now_register_recv_cb(esp_now_recv_cb_t(onDataRecv));
-
-  // Assign the api key (required)
-  config.api_key = API_KEY;
-
-  // Assign the user sign in credentials
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
-
-  // Assign the RTDB URL (required)
-  config.database_url = DATABASE_URL;
-
-  Firebase.reconnectWiFi(true);
-  fbdo.setResponseSize(4096);
-
-  // Assign the callback function for the long running token generation task */
-  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
-
-  // Assign the maximum retry of token generation
-  config.max_token_generation_retry = 5;
-
-  // Initialize the library with the Firebase authen and config
-  Firebase.begin(&config, &auth);
-
-  // Getting the user UID might take a few seconds
-  Serial.println("Getting User UID");
-  while ((auth.token.uid) == "") {
-    Serial.print('.');
-    delay(1000);
-  }
-  // Print user UID
-  uid = auth.token.uid.c_str();
-  // Serial.print("User UID: ");
-  // Serial.println(uid);
-
-  // Update database path
   databasePath = "/Node_/";
-  databasePath += int(data.node_id);
+  databasePath += String(data.node_id);
   // databasePath += String(data.node_id);
 
   // Update database path for sensor readings
@@ -169,20 +150,29 @@ void setup(){
   humPath = databasePath;
   humPath += "/humidity"; // --> UsersData/<user_uid>/humidity
   flamePath = databasePath;
-  flamePath += "/pressure"; // --> UsersData/<user_uid>/pressure
+  flamePath += "/flame"; // --> UsersData/<user_uid>/pressure
   COPath = databasePath;
   COPath += "/CO"; // --> UsersData/<user_uid>/CO
 }
 
+
+void setup(){
+  Serial.begin(115200);
+  initWiFi();
+  initESPNow();
+  initFirebase();
+  esp_now_register_recv_cb(esp_now_recv_cb_t(onDataRecv));
+}
+
 void loop(){
-  // Send new readings to database
-  if (Firebase.ready() && (millis() - sendDataPrevMillis > timerDelay || sendDataPrevMillis == 0)){
-    sendDataPrevMillis = millis();
+  if (Firebase.ready() && dataReady){
+    // sendDataPrevMillis = millis();
 
     // Send readings to database:
     sendFloat(tempPath, data.temperature);
     sendFloat(humPath, data.humidity);
     sendFloat(flamePath, data.flame_detected);
     sendFloat(COPath, data.co_detected);
+    dataReady = false;
   }
 }
