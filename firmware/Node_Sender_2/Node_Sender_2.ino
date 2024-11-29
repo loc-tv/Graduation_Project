@@ -59,13 +59,20 @@ void setup() {
 
   // Cấu hình ESP-NOW
   WiFi.mode(WIFI_STA);
+<<<<<<< HEAD
   WiFi.disconnect();
 
+=======
+>>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed");
     return;
   }
+<<<<<<< HEAD
   esp_now_peer_info_t peerInfo = {} ;
+=======
+  esp_now_peer_info_t peerInfo;
+>>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
   memcpy(peerInfo.peer_addr, gatewayMAC, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
@@ -105,5 +112,9 @@ void loop() {
   esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
 
   // Chờ 2 giây trước khi lặp lại
+<<<<<<< HEAD
   delay(10000);
+=======
+  delay(2000);
+>>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
 }

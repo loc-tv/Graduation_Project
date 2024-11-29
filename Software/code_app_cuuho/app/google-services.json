@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "885997488862",
+    "project_id": "pccc-6d1cf",
+    "storage_bucket": "pccc-6d1cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885997488862:android:76a245959d9e64a687904f",
+        "android_client_info": {
+          "package_name": "com.example.pccc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0U8MxgtIw-sD3OduhkC6jXbqKQeIocy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
