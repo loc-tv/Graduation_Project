@@ -20,8 +20,8 @@ unsigned long delayTime;
 #define IR_DO_PIN 0
 
 //MQ7 sensor config
-#define MQ7_AO_PIN 4
-#define MQ7_DO_PIN 16
+#define MQ7_AO_PIN 16
+#define MQ7_DO_PIN 4
 
 
 void setup() 
