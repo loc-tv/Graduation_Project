@@ -10,8 +10,8 @@
 #define LED_RED 17
 #define LED_GREEN 5
 #define IR_DO_PIN 0
-#define MQ7_AO_PIN 4
-#define MQ7_DO_PIN 16
+#define MQ7_AO_PIN 16
+#define MQ7_DO_PIN 4
 
 // Địa chỉ I2C của BME280
 #define BME280_ADDRESS 0x76
@@ -103,6 +103,6 @@ void loop() {
   // Gửi dữ liệu qua ESP-NOW
   esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
 
-  // Chờ 2 giây trước khi lặp lại
-  delay(10000);
+  // Chờ 5 giây trước khi lặp lại
+  delay(5000);
 }

@@ -10,8 +10,8 @@
 #define LED_RED 17
 #define LED_GREEN 5
 #define IR_DO_PIN 0
-#define MQ7_AO_PIN 4
-#define MQ7_DO_PIN 16
+#define MQ7_AO_PIN 16
+#define MQ7_DO_PIN 4
 
 // Địa chỉ I2C của BME280
 #define BME280_ADDRESS 0x76
@@ -59,20 +59,15 @@ void setup() {
 
   // Cấu hình ESP-NOW
   WiFi.mode(WIFI_STA);
-<<<<<<< HEAD
   WiFi.disconnect();
 
-=======
->>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed");
     return;
   }
-<<<<<<< HEAD
   esp_now_peer_info_t peerInfo = {} ;
-=======
-  esp_now_peer_info_t peerInfo;
->>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
+
+
   memcpy(peerInfo.peer_addr, gatewayMAC, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
@@ -111,10 +106,6 @@ void loop() {
   // Gửi dữ liệu qua ESP-NOW
   esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
 
-  // Chờ 2 giây trước khi lặp lại
-<<<<<<< HEAD
-  delay(10000);
-=======
-  delay(2000);
->>>>>>> c69eb551cfe28ffcea4a1786500ce07905506713
+  // Chờ 5 giây trước khi lặp lại
+  delay(5000);
 }
