@@ -2,6 +2,8 @@
 #include <Firebase_ESP_Client.h>
 #include <esp_now.h>
 #include <WiFi.h>
+#include <esp_wifi.h>
+
 
 
 // Provide the token generation process info.
@@ -10,8 +12,8 @@
 #include "addons/RTDBHelper.h"
 
 // Insert your network credentials
-#define WIFI_SSID "Nguyen Tien Hoa"
-#define WIFI_PASSWORD "Nguyentienhoa"
+#define WIFI_SSID "VIETTEL"
+#define WIFI_PASSWORD "88888888"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyAoCKv3BaqZz_mNPUJEgpAzcGT6HbL_r08"
@@ -71,6 +73,21 @@ void initESPNow()
 {
   WiFi.mode(WIFI_STA);
     // Initialize ESP-NOW
+
+  // Tắt chế độ tiết kiệm năng lượng
+  if (esp_wifi_set_ps(WIFI_PS_NONE) == ESP_OK) {
+    Serial.println("Power Save Mode: NONE (Max Performance)");
+  } else {
+    Serial.println("Failed to disable Power Save mode");
+  }
+
+  // Đặt công suất phát tối đa
+  if (esp_wifi_set_max_tx_power(78) == ESP_OK) {
+    Serial.println("TX Power: Maximum (19.5 dBm)");
+  } else {
+    Serial.println("Failed to set TX Power");
+  }
+
   if (esp_now_init() == ESP_OK) 
     Serial.println("ESP-NOW initialized"); 
   else {

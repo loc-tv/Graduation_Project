@@ -3,6 +3,7 @@
 #include <Adafruit_BME280.h>
 #include <esp_now.h>
 #include <WiFi.h>
+#include <esp_wifi.h>
 
 // Cấu hình chân cảm biến và ngoại vi
 #define RELAY_IN1 27
@@ -57,9 +58,26 @@ void setup() {
     while (1);
   }
 
+  
+
   // Cấu hình ESP-NOW
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+
+  // Tắt chế độ tiết kiệm năng lượng
+ if (esp_wifi_set_ps(WIFI_PS_NONE) == ESP_OK) {
+    Serial.println("Power Save Mode: NONE (Max Performance)");
+  } else {
+    Serial.println("Failed to disable Power Save mode");
+  }
+
+  // Đặt công suất phát tối đa
+  if (esp_wifi_set_max_tx_power(78) == ESP_OK) {
+    Serial.println("TX Power: Maximum (19.5 dBm)");
+  } else {
+    Serial.println("Failed to set TX Power");
+  }
+
   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed");
     return;
