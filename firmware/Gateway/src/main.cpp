@@ -3,6 +3,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
 
 
 
@@ -12,8 +14,8 @@
 #include "addons/RTDBHelper.h"
 
 // Insert your network credentials
-#define WIFI_SSID "VIETTEL"
-#define WIFI_PASSWORD "88888888"
+#define WIFI_SSID "WICOM"
+#define WIFI_PASSWORD "Wicom123"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyAoCKv3BaqZz_mNPUJEgpAzcGT6HbL_r08"
@@ -27,12 +29,10 @@
 
 bool dataReady = false;
 
-
 // Define Firebase objects
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
-
 
 String databasePath;
 String tempPath;
@@ -190,6 +190,7 @@ void loop(){
     sendFloat(humPath, data.humidity);
     sendFloat(flamePath, data.flame_detected);
     sendFloat(COPath, data.co_detected);
+
     dataReady = false;
   }
 }

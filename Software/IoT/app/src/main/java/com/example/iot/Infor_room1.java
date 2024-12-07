@@ -2,6 +2,8 @@ package com.example.iot;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +17,8 @@ import java.util.Date;
 
 public class Infor_room1 extends AppCompatActivity {
 
+    public ImageButton backButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,10 +29,13 @@ public class Infor_room1 extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        TextView textView = findViewById(R.id.date_show);
-        Date date = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy");
-        String dateString = s.format(date);
-        textView.setText(dateString);
+
+        backButton = findViewById(R.id.back);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
     }
 }

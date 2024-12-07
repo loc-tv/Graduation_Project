@@ -9,4 +9,5 @@
     <string name="room_2">Phòng 2</string>
     <string name="name_room_2">Thông số phòng 2</string>
     <string name="todo">TODO</string>
+    <string name="image_button">Back</string>
 </resources>

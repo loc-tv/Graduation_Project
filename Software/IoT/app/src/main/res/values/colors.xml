@@ -14,4 +14,9 @@
     <color name="navy">#53a7d8</color>
     <color name="background">#F2F6FC</color>
     <color name="sh">#2666DE</color>
+    <color name="sky_blue">#B7E0FF</color>
+    <color name="light_blue">#E2F3FD</color>
+    <color name="blue_jeans">#4B89DA</color>
+    <color name="aqua">#00C4D4</color>
+
 </resources>
