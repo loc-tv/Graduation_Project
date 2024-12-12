@@ -5,6 +5,7 @@
 #include <esp_wifi.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
+#include "config.h"
 
 
 
@@ -14,8 +15,10 @@
 #include "addons/RTDBHelper.h"
 
 // Insert your network credentials
-#define WIFI_SSID "WICOM"
-#define WIFI_PASSWORD "Wicom123"
+// #define WIFI_SSID "WICOM"
+// #define WIFI_PASSWORD "Wicom123"
+#define WIFI_SSID "VIETTEL"
+#define WIFI_PASSWORD "88888888"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyAoCKv3BaqZz_mNPUJEgpAzcGT6HbL_r08"
@@ -28,6 +31,14 @@
 #define DATABASE_URL "https://fire-warning-ca3ca-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 bool dataReady = false;
+
+// define the display
+Adafruit_SSD1306 display1(-1);
+Adafruit_SSD1306 display2(-1);
+// this is the default address of the display(0x78) on back of display
+#define OLED1 0x3C
+// this is after switching over the jumper.
+#define OLED2 0x3D
 
 // Define Firebase objects
 FirebaseData fbdo;
@@ -179,6 +190,32 @@ void setup(){
   initESPNow();
   initFirebase();
   esp_now_register_recv_cb(esp_now_recv_cb_t(onDataRecv));
+
+
+  display1.begin(SSD1306_SWITCHCAPVCC, OLED1);
+  display1.clearDisplay();
+  display1.display();
+  display2.begin(SSD1306_SWITCHCAPVCC, OLED2);
+  display2.clearDisplay();
+  display2.display();
+  pinMode(BUZZ1, OUTPUT);
+  pinMode(BUZZ2, OUTPUT);
+  pinMode(LG1, OUTPUT);
+  pinMode(LY1, OUTPUT);
+  pinMode(LR1, OUTPUT);
+  pinMode(LG2, OUTPUT);
+  pinMode(LY2, OUTPUT);
+  pinMode(LR2, OUTPUT);
+
+  // digitalWrite(BUZZ1, LOW);
+  // digitalWrite(BUZZ2, LOW);
+  digitalWrite(LG1, HIGH);
+  digitalWrite(LY1, HIGH);
+  digitalWrite(LR1, HIGH);
+  digitalWrite(LG2, HIGH);
+  digitalWrite(LY2, HIGH);
+  digitalWrite(LR2, HIGH);
+
 }
 
 void loop(){
@@ -190,6 +227,82 @@ void loop(){
     sendFloat(humPath, data.humidity);
     sendFloat(flamePath, data.flame_detected);
     sendFloat(COPath, data.co_detected);
+
+    // Send data to display
+    if (data.node_id == 1){
+      display1.clearDisplay();
+      display1.setTextSize(1);
+      display1.setTextColor(WHITE);
+      display1.setCursor(0, 0 );
+      display1.print("Temp 1: ");
+      display1.print(data.temperature);
+      display1.print((char)247);
+      display1.println("C");
+      display1.setCursor(0, 8); 
+      display1.print("Humidity 1:");
+      display1.print(data.humidity);
+      display1.println("%");
+      display1.setCursor(0, 16);
+      display1.print("Flame 1:");
+      display1.println(data.flame_detected ? "Flame detect" : "No detect");
+      display1.setCursor(0, 24);
+      display1.print("CO 1: ");
+      display1.println(data.co_detected ? "Nguy hiem" : "An toan");
+      display1.display();
+      if (data.temperature <30 && data.flame_detected == false && data.co_detected == false) {
+        digitalWrite(LG1, LOW);
+        digitalWrite(LR1, HIGH);
+        digitalWrite(LY1, HIGH);
+      }
+      else if (data.temperature >30 || data.flame_detected == true || data.co_detected == true) {
+        digitalWrite(LG1, LOW);
+        digitalWrite(LR1, HIGH);
+        digitalWrite(LY1, LOW);
+      }
+      else if (data.temperature >30 && data.flame_detected == true && data.co_detected == true) {
+        digitalWrite(LG1, LOW);
+        digitalWrite(LR1, LOW);
+        digitalWrite(LY1, HIGH);
+      }
+    }
+
+    else if (data.node_id == 2){
+      display2.clearDisplay();
+      display2.setTextSize(1);
+      display2.setTextColor(WHITE);
+      display2.setCursor(0, 0 );
+      display2.print("Temp 2: ");
+      display2.print(data.temperature);
+      display2.print((char)247);
+      display2.println("C");
+      display2.setCursor(0, 8); 
+      display2.print("Humidity 2:");
+      display2.print(data.humidity);
+      display2.println("%");
+      display2.setCursor(0, 16);
+      display2.print("Flame 2:");
+      display2.println(data.flame_detected ? "Flame detect" : "No detect");
+      display2.setCursor(0, 24);
+      display2.print("CO 2: ");
+      display2.println(data.co_detected ? "Nguy hiem" : "An toan");
+      display2.display();
+
+      if (data.temperature <30 && data.flame_detected == false && data.co_detected == false) {
+        digitalWrite(LG2, LOW);
+        digitalWrite(LR2, HIGH);
+        digitalWrite(LY2, HIGH);
+      }
+      else if (data.temperature >30 || data.flame_detected == true || data.co_detected == true) {
+        digitalWrite(LG2, LOW);
+        digitalWrite(LR2, HIGH);
+        digitalWrite(LY2, LOW);
+      }
+      else if (data.temperature >30 && data.flame_detected == true && data.co_detected == true) {
+        digitalWrite(LG2, LOW);
+        digitalWrite(LR2, LOW);
+        digitalWrite(LY2, HIGH);
+      }
+    }
 
     dataReady = false;
   }

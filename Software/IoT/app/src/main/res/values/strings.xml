@@ -10,4 +10,8 @@
     <string name="name_room_2">Thông số phòng 2</string>
     <string name="todo">TODO</string>
     <string name="image_button">Back</string>
+    <string name="glass_morphism">glass</string>
+    <string name="temp">Nhiệt độ</string>
+    <string name="hum">Humi</string>
+    <string name="CO_gas">Khí CO</string>
 </resources>
