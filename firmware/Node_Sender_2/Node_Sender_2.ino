@@ -47,8 +47,8 @@ void setup() {
   pinMode(MQ7_DO_PIN, INPUT);
 
   // Mặc định trạng thái ban đầu
-  digitalWrite(RELAY_IN1, LOW);
-  digitalWrite(RELAY_IN2, LOW);
+  digitalWrite(RELAY_IN1, HIGH);
+  digitalWrite(RELAY_IN2, HIGH);
   digitalWrite(LED_RED, LOW);
   digitalWrite(LED_GREEN, HIGH);  // Đèn xanh bật khi an toàn
 
@@ -62,7 +62,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
 
-  // Tắt chế độ tiết kiệm năng lượng
+  // // Tắt chế độ tiết kiệm năng lượng
   if (esp_wifi_set_ps(WIFI_PS_NONE) == ESP_OK) {
     Serial.println("Power Save Mode: NONE (Max Performance)");
   } else {
@@ -79,10 +79,12 @@ void setup() {
   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed");
     return;
+  }else {
+    Serial.println("ESP-NOW Init Success");
   }
+
+
   esp_now_peer_info_t peerInfo = {} ;
-
-
   memcpy(peerInfo.peer_addr, gatewayMAC, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
@@ -108,19 +110,19 @@ void loop() {
     // Kích hoạt đèn đỏ và relay
     digitalWrite(LED_RED, HIGH);
     digitalWrite(LED_GREEN, LOW);
-    digitalWrite(RELAY_IN1, HIGH);
-    digitalWrite(RELAY_IN2, HIGH);
+    digitalWrite(RELAY_IN1, LOW);
+    digitalWrite(RELAY_IN2, LOW);
   } else {
     // Trạng thái an toàn
     digitalWrite(LED_RED, LOW);
     digitalWrite(LED_GREEN, HIGH);
-    digitalWrite(RELAY_IN1, LOW);
-    digitalWrite(RELAY_IN2, LOW);
+    digitalWrite(RELAY_IN1, HIGH);
+    digitalWrite(RELAY_IN2, HIGH);
   }
 
   // Gửi dữ liệu qua ESP-NOW
   esp_now_send(gatewayMAC, (uint8_t *)&data, sizeof(data));
 
-  // Chờ 5 giây trước khi lặp lại
-  delay(5000);
+  // Chờ 2 giây trước khi lặp lại
+  delay(2000);
 }
