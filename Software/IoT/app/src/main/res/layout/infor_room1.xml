@@ -47,7 +47,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5">
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -94,6 +93,7 @@
                             android:layout_height="0dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
+                            android:contentDescription="@string/temp"
                             android:src="@drawable/temp" />
 
                         <TextView
@@ -107,6 +107,7 @@
                             android:textColor="@color/black"
                             android:textSize="20sp" />
                         <TextView
+                            android:id="@+id/temp_show"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_gravity="center"
@@ -150,7 +151,8 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:layout_gravity="center"
-                            android:src="@drawable/humidity"/>
+                            android:src="@drawable/humidity"
+                            android:contentDescription="@string/hum"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -163,6 +165,7 @@
                             android:textSize="20sp"
                             android:layout_weight="0.5"/>
                         <TextView
+                            android:id="@+id/humi_show"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_gravity="center"
@@ -204,7 +207,8 @@
                             android:layout_height="0dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:src="@drawable/flame" />
+                            android:src="@drawable/flame"
+                            android:contentDescription="@string/flame"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -217,6 +221,7 @@
                             android:textColor="@color/black"
                             android:textSize="20sp"/>
                         <TextView
+                            android:id="@+id/flame_show"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_gravity="center"
@@ -258,7 +263,8 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:layout_gravity="center"
-                            android:src="@drawable/co_gas"/>
+                            android:src="@drawable/co_gas"
+                            android:contentDescription="@string/CO_gas"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -271,6 +277,7 @@
                             android:textSize="20sp"
                             android:layout_weight="0.5"/>
                         <TextView
+                            android:id="@+id/CO_gas_show"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_gravity="center"
