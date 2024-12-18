@@ -20,15 +20,18 @@
 // #define WIFI_SSID "VIETTEL"
 // #define WIFI_PASSWORD "88888888"
 
+// #define WIFI_SSID "PhamThai"
+// #define WIFI_PASSWORD "123456780"
+
 // Insert Firebase project API Key
-#define API_KEY "AIzaSyAoCKv3BaqZz_mNPUJEgpAzcGT6HbL_r08"
+#define API_KEY "AIzaSyARh2E7VKMCTOze2lledQDDdKx1H9sbK7g"
 
 // Insert Authorized Email and Corresponding Password
-#define USER_EMAIL "loc1852002@gmail.com"
-#define USER_PASSWORD "Martini1905"
+#define USER_EMAIL "Thai04092002@gmail.com"
+#define USER_PASSWORD "phamduchuan"
 
 // Insert RTDB URLefine the RTDB URL
-#define DATABASE_URL "https://fire-warning-ca3ca-default-rtdb.asia-southeast1.firebasedatabase.app/"
+#define DATABASE_URL "https://fire-warning-77a6d-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 bool dataReady = false;
 

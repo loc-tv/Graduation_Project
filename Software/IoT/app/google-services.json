@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "52556102754",
-    "firebase_url": "https://fire-warning-ca3ca-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "fire-warning-ca3ca",
-    "storage_bucket": "fire-warning-ca3ca.firebasestorage.app"
+    "project_number": "1005595669877",
+    "firebase_url": "https://fire-warning-77a6d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "fire-warning-77a6d",
+    "storage_bucket": "fire-warning-77a6d.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:52556102754:android:890fce8ccfa9f4285e653b",
+        "mobilesdk_app_id": "1:1005595669877:android:07834c448a1eb988384f3c",
         "android_client_info": {
           "package_name": "com.example.iot"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBHnh1ThyYv7zC-Fu3lxJ_e_VgHn-cBWLw"
+          "current_key": "AIzaSyA16TMM7n0h6G_KHQ_fuTfWzGVF9I0Zxlg"
         }
       ],
       "services": {
